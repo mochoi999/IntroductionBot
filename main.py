@@ -39,20 +39,23 @@ class SelfIntroduction(commands.Cog):
                 count = len(await channel.history(limit=None).flatten())
                 if count == 0:  # 名前を格納
                     await channel.send(message.content)
+                    await message.channel.send(embed=self.send_embed("誰から招待を受けましたか？"))
+                elif count == 1:  # 招待元を格納
+                    await channel.send(message.content)
                     await message.channel.send(embed=self.send_embed("SLID（アバターのID）を教えてください。"))
-                elif count == 1:  # SLIDを格納
+                elif count == 2:  # SLIDを格納
                     await channel.send(message.content)
                     await message.channel.send(embed=self.send_embed("ものづくりの経験はありますか？\nある場合は、どんなことをどのくらいしたことがありますか？"))
-                elif count == 2:  # ものづくりを格納
+                elif count == 3:  # ものづくりを格納
                     await channel.send(message.content)
                     await message.channel.send(embed=self.send_embed("これからどんなことをしてみたいですか？"))
-                elif count == 3:  # してみたいことを格納
+                elif count == 4:  # してみたいことを格納
                     await channel.send(message.content)
                     await message.channel.send(embed=self.send_embed("一言お願いします。"))
-                elif count == 4:  # 一言を格納
+                elif count == 5:  # 一言を格納
                     await channel.send(message.content)
                     await self.complete(channel, message)
-                elif count == 6:  # 自己紹介が登録されている場合
+                elif count == 7:  # 自己紹介が登録されている場合
                     await message.channel.send(embed=self.send_embed(f"{message.author.name}さんの自己紹介文は既に登録済みです。\n"
                                                                      f"変更する場合は、 `/reset` コマンドを送信して下さい"))
             else:  # 自己紹介データが無い場合
@@ -117,12 +120,13 @@ class SelfIntroduction(commands.Cog):
         embed = discord.Embed(title="自己紹介")
         embed.set_thumbnail(url=member.avatar_url)
         embed.add_field(name=f"【 __名前__ 】", value=f"  {_list[0]}", inline=False)
-        embed.add_field(name=f"【 __SLID__ 】", value=f"  {_list[1]}", inline=False)
-        if _list[2] != "skip":
-            embed.add_field(name=f"【 __ものづくり経験__ 】", value=f"  {_list[2]}", inline=False)
+        embed.add_field(name=f"【__招待元__】", value=f"  {_list[1]}", inline=False)
+        embed.add_field(name=f"【 __SLID__ 】", value=f"  {_list[2]}", inline=False)
         if _list[3] != "skip":
-            embed.add_field(name=f"【 __してみたいこと__ 】", value=f"  {_list[3]}", inline=False)
-        embed.add_field(name=f"【 __一言__ 】", value=f"  {_list[4]}", inline=False)
+            embed.add_field(name=f"【 __ものづくり経験__ 】", value=f"  {_list[3]}", inline=False)
+        if _list[4] != "skip":
+            embed.add_field(name=f"【 __してみたいこと__ 】", value=f"  {_list[4]}", inline=False)
+        embed.add_field(name=f"【 __一言__ 】", value=f"  {_list[5]}", inline=False)
         return embed
 
     # ---completeメソッド内でのみ呼び出される---
@@ -153,7 +157,7 @@ class SelfIntroduction(commands.Cog):
                 await ctx.send(embed=self.send_embed("自己紹介文を再登録します。"))
                 channel = self.get_db_channel(ctx.author.id)
                 count = len(await channel.history(limit=None).flatten())
-                if count == 6:
+                if count == 7:
                     msg_id = channel.last_message.content
                     msg = await self.INTRODUCTION_CHANNEL.fetch_message(int(msg_id))
                     await msg.delete()
